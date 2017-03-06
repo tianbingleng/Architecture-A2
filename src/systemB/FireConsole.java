@@ -1,12 +1,27 @@
+/******************************************************************************************************************
+* File:FireConsole.java
+* Course: 17655
+* Project: Assignment A2
+* Copyright: Copyright (c) 2009 Carnegie Mellon University
+* Versions:
+*	1.0 
+*
+* Description: This class is the console for the museum fire control system. This process consists of two
+* threads. The FireMonitor object is a thread that is started that is responsible for the monitoring and control of
+* the fire systems. The main thread provides a text interface for the security guard to confirm or cancel the sprinkler
+* action when there is a fire. Also, if the action is not confirmed or cancelled within 10 seconds, the sprinkler will
+* go off automatically.
+*
+* Parameters: None
+*
+* Internal Methods: None
+*
+******************************************************************************************************************/
 package systemB;
 import TermioPackage.*;
 import MessagePackage.*;
 
-import java.awt.AWTException;
-import java.awt.Robot;
-import java.awt.event.KeyEvent;
-import java.util.Timer;
-import java.util.TimerTask;
+
 public class FireConsole{
 	Termio UserInput = new Termio();
 	private static String Option = "";				// Menu choice from user
@@ -18,7 +33,7 @@ public class FireConsole{
 		
 	
 	boolean Done = false;				// Main loop flag
-	int	Delay = 2500;					// The loop delay (2.5 seconds)
+	
 	Termio UserInput2 = new Termio();
 	
 	FireMonitor Monitor = null;			// The environmental control system monitor
@@ -35,7 +50,7 @@ if ( args.length != 0 )
 Monitor = new FireMonitor( args[0] );
 
 } else {
-
+//initialize the thread for monitoring fire.
 Monitor = new FireMonitor();
 
 } // if
@@ -60,7 +75,7 @@ if (Monitor.IsRegistered() )
 		Option = UserInput2.KeyboardReadString();
 		
 	
-	if(Option.equals("1")){
+	if(Option.equals("1")){ // confirm sprinkler action by security guard
 		    if (Monitor.getFireState().equals("true")){
 			Monitor.setSprinklerState(true);
 			System.out.println("Sprinkler action confirmed");
@@ -68,7 +83,7 @@ if (Monitor.IsRegistered() )
 		    }
 		
 	}
-	if(Option.equals("2")){
+	if(Option.equals("2")){ // cancel sprinkler action by security guard
 		    if (Monitor.getFireState().equals("true")){
 			 Monitor.setSprinklerState(false);
 			
@@ -76,7 +91,7 @@ if (Monitor.IsRegistered() )
 			 Option ="";
 		    }
 	}
-	if ( Option.equalsIgnoreCase( "X" ) )
+	if ( Option.equalsIgnoreCase( "X" ) ) //close consoles
 	{
 		// Here the user is done, so we set the Done flag and halt
 		// the environmental control system. The monitor provides a method

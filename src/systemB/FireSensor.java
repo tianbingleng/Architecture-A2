@@ -1,3 +1,23 @@
+/******************************************************************************************************************
+* File:FireSensor.java
+* Course: 17655
+* Project: Assignment A2
+* Copyright: Copyright (c) 2009 Carnegie Mellon University
+* Versions:
+*	1.0 
+*
+* Description:
+*
+* This class simulates a fire sensor. It asks the user from the command prompt to enter 1. for fire and 2. for shut off fire.
+*
+* Parameters: IP address of the message manager (on command line). If blank, it is assumed that the message manager is
+* on the local machine.
+*
+* Internal Methods:
+*	
+*   void PostFire(MessageManagerInterface ei, float FireState )
+*
+******************************************************************************************************************/
 package systemB;
 import InstrumentationPackage.*;
 import MessagePackage.*;
@@ -70,7 +90,7 @@ public class FireSensor{
 
 		if (em != null)
 		{
-			FileSensorStatusReporter fssr = new FileSensorStatusReporter(em);
+			FileSensorStatusReporter fssr = new FileSensorStatusReporter(em); //send status for reliability 
 			fssr.start();
 			// We create a message window. Note that we place this panel about 1/2 across
 			// and 1/3 down the screen
@@ -101,24 +121,24 @@ public class FireSensor{
 			
 			mw.WriteMessage("   Initial No fire set:: " + CurrentFireState );
 			String Option = null;
-			while(!Done){
-				if(!CurrentFireState){
+			while(!Done){ //start the console inputs
+				if(!CurrentFireState){ //if no fire, then we can start fire
 					System.out.print( "\nEnter 1 to start Fire>>> " );
 					Option = UserInput.KeyboardReadString();
 				}else
-				{
+				{ // if there is a fire, we can end the fire.
 					System.out.print( "\nEnter 2 to end Fire>>> " );
 					Option = UserInput.KeyboardReadString();
 				}
 				
-				if(Option.equals("1")){
+				if(Option.equals("1")){ //call PostFire method that sends message to message bus.
 					if(!CurrentFireState){
 						CurrentFireState = true;
 						PostFire(em, CurrentFireState);
 						mw.WriteMessage("Current Fire State::  " + CurrentFireState);
 					}
 				}
-				else if(Option.equals("2")){
+				else if(Option.equals("2")){ //call PostFire method that sends message to message bus.
 					if(CurrentFireState){
 						CurrentFireState=false;
 						PostFire(em, CurrentFireState);
@@ -143,14 +163,14 @@ public class FireSensor{
 			
 		
 	/***************************************************************************
-	* CONCRETE METHOD:: PostTemperature
-	* Purpose: This method posts the specified temperature value to the
-	* specified message manager. This method assumes an message ID of 1.
+	* CONCRETE METHOD:: PostFire
+	* Purpose: This method posts the specified fire state to the
+	* specified message manager. This method assumes an message ID of 8.
 	*
 	* Arguments: MessageManagerInterface ei - this is the messagemanger interface
 	*			 where the messagxe will be posted.
 	*
-	*			 float temperature - this is the temp value.
+	*			 Boolean fireState : state of fire
 	*
 	* Returns: none
 	*

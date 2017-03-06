@@ -1,3 +1,25 @@
+/******************************************************************************************************************
+* File:FireController.java
+* Course: 17655
+* Project: Assignment A2
+* Copyright: Copyright (c) 2009 Carnegie Mellon University
+* Versions:
+*	1.0 
+*
+* Description:
+*
+* This class simulates a device that controls the fire alarm. It polls the message manager for message
+* ids = 10 and reacts to them by turning on or off the fire alarm. 
+* 
+* The state (on/off) is graphically displayed on the terminal in the indicator. Command messages are displayed in
+* the message window. 
+*
+* Parameters: IP address of the message manager (on command line). If blank, it is assumed that the message manager is
+* on the local machine.
+*
+* 
+*
+******************************************************************************************************************/
 package systemB;
 import InstrumentationPackage.*;
 import MessagePackage.*;
@@ -105,10 +127,11 @@ public class FireController {
 			** Here we start the main simulation loop
 			*********************************************************************/
 while(!Done){
-	ss.PostState(em);
+	ss.PostState(em); //send working state to the StatusSender
+	mw.WriteMessage("Sprinkler state:: " + FireAlarmState );
 	try
 	{
-		eq = em.GetMessageQueue();
+		eq = em.GetMessageQueue(); //get message fro queue
 
 	} // try
 
@@ -169,7 +192,7 @@ while(!Done){
 		
 	} //for
 	
-	if (FireAlarmState){
+	if (FireAlarmState){ //set the fire alarm indicator ON.
 		falarm.SetLampColorAndMessage("FireAlarm On",3);
 	}else
 	{

@@ -1,3 +1,24 @@
+/******************************************************************************************************************
+* File:FireMonitor.java
+* Course: 17655
+* Project: Assignment A2
+* Copyright: Copyright (c) 2009 Carnegie Mellon University
+* Versions:
+*	1.0 
+*
+* Description:
+*
+* This class monitors the fire systems systems that control museum sprinkler and fire alarm. In addition to
+* monitoring the fire sensor, the FireMonitor also triggers a call to the sprinkler controller if the fire is sensed and there is no
+* output by the security guard for 10 seconds.
+*
+* Parameters: IP address of the message manager (on command line). If blank, it is assumed that the message manager is
+* on the local machine.
+*
+*
+*
+******************************************************************************************************************/
+
 package systemB;
 import InstrumentationPackage.Indicator;
 import InstrumentationPackage.MessageWindow;
@@ -83,7 +104,7 @@ public class FireMonitor extends Thread{
 		{
 			mw = new MessageWindow("Fire Monitoring Console", 0, 0);
 			fireAction = new Indicator ("Fire UNK", mw.GetX()+ mw.Width(), 0);
-			sprinklerAction = new Indicator ("Sprinkler UNK", mw.GetX()+ mw.Width(), 0);
+			sprinklerAction = new Indicator ("Sprinkler UNK", mw.GetX()+ mw.Width(), mw.Height()/2);
 			
 			try
 	    	{
@@ -100,10 +121,10 @@ public class FireMonitor extends Thread{
 			
 			while(!Done){
 				ss.PostState(em);
-				if((System.currentTimeMillis() - startTime >= 10000) && (startTime!=0)){
+				if((System.currentTimeMillis() - startTime >= 10000) && (startTime!=0)){ //if there is fire, then check if time > 10sec
 					if(FireState.equals("true") && sprinklerState.equals("false")){
-						sprinklerState="true";
-						startTime =0;
+						sprinklerState="true"; //switch on sprinker state
+						startTime =0; //reset start time.
 					}
 				}
 				try
@@ -131,15 +152,15 @@ public class FireMonitor extends Thread{
 						{
 							FireState = Msg.GetMessage();
 							System.out.println("fire state: "+Msg.GetMessage());
-							if(FireState.equals("true")){
-								startTime = System.currentTimeMillis();
+							if(FireState.equals("true")){ //Input taken at the console
+								startTime = System.currentTimeMillis(); //fire sensed, start count down immediately. 
 								System.out.println( "1: Confirm Sprinkler Action" );
 								System.out.println( "2: Cancel Sprinkler Action" );
 								System.out.println( "X: Stop System\n" );
 								System.out.print( "\n>>>> " );
 							}
 							else{
-								System.out.println( "X: Stop System\n" );
+								System.out.println( "X: Stop System\n" ); //no fire, so console should display only close
 								System.out.print( "\n>>>> " );
 							}
 							
@@ -185,14 +206,14 @@ public class FireMonitor extends Thread{
 				
 				}//for
 				
-				
+				//write states in message window.
 				mw.WriteMessage("Fire state:: " + FireState + "  Sprinkler state:: " + sprinklerState );
 				
-				if(FireState.equals("true")){
+				if(FireState.equals("true")){ //switch on fire on indicator
 					fireAction.SetLampColorAndMessage("Fire On", 3);					
-					FireAlarm(true);
+					FireAlarm(true); //send signal to controller
 					
-				}else{ // set fire off and sprinkler to off
+				}else{ // set fire off and sprinkler to off; once the fire is switched off the sprinkler will automatically switch off
 					startTime = 0;
 					fireAction.SetLampColorAndMessage("Fire Off", 1);
 					FireAlarm(false);
@@ -201,10 +222,10 @@ public class FireMonitor extends Thread{
 					SprinklerControl(false);
 				}
 				
-				if(sprinklerState.equals("true")){
+				if(sprinklerState.equals("true")){ //if sprinkler action confirmed send signal to sprinkler controller
 					sprinklerAction.SetLampColorAndMessage("Sprinkler Action Confirmed", 3);
 					SprinklerControl(true);
-				}else{
+				}else{ // sprinkler action is false, ask sprinkler controller to not switch on sprinkler.
 					sprinklerAction.SetLampColorAndMessage("Sprinkler Action off", 1);
 					SprinklerControl(false);
 				}
@@ -234,7 +255,7 @@ public class FireMonitor extends Thread{
 		return( Registered );
 
 	} 
-	
+	//function to set the sprinker state to true and turn indicator on. Also, call function to send message to controller
 	public void setSprinklerState(Boolean stateSprinkler){
 		if(stateSprinkler){
 			sprinklerState = "true";
@@ -242,7 +263,7 @@ public class FireMonitor extends Thread{
 			SprinklerControl(true);
 			startTime =0;
 			
-		}else{
+		}else{ //function to set the sprinker state to false and turn indicator off. Also, call function to send message to controller
 			sprinklerState = "false";
 			sprinklerAction.SetLampColorAndMessage("Sprinkler Action off", 1);
 			SprinklerControl(false);
@@ -250,7 +271,7 @@ public class FireMonitor extends Thread{
 		}
 			
 	}
-
+//send fire alarm message to Firecontroller
 	public void FireAlarm(Boolean stateFire){
 		Message msg;
 
@@ -280,7 +301,7 @@ public class FireMonitor extends Thread{
 
 	}
 	
-	
+	//function to send sprinkler on and off message to sprinkler controller.
 	public void SprinklerControl(Boolean stateSprinkler){
 		Message msg;
 
@@ -308,15 +329,15 @@ public class FireMonitor extends Thread{
 
 		} // catch	
 	}
-
+	//getter method
 	public String getSprinklerState() {
 		return sprinklerState;
 	}
-
+	//getter method
 	public String getFireState() {
 		return FireState;
 	}
-	
+	//send halt message for exit code received.
 	public void Halt()
 	{
 		mw.WriteMessage( "***HALT MESSAGE RECEIVED - SHUTTING DOWN SYSTEM***" );
