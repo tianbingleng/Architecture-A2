@@ -1,3 +1,15 @@
+/******************************************************************************************************************
+* File:StatusSender.java
+* Description:
+*
+* This class is used to send the status of each component to the maintaince
+* monitor. It will used 1000 as ID, and the content includes bothe the name
+* and description. The name and description are seperated with #
+*
+* Internal Methods:
+*	public void PostState(MessageManagerInterface ei)
+*
+******************************************************************************************************************/
 
 import MessagePackage.*;
 
