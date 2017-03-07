@@ -1,3 +1,14 @@
+/******************************************************************************************************************
+* File:MaintenanceMonitor.java
+* Description:
+*
+* This class is used to receive the status message and display the status of each component.
+* It will automatically receive the message whose id is 1000, and extract the name, description
+* and update the status of each component. Here, if 3 seconds, no status information are received,
+* the components are considered disconnected.
+*
+******************************************************************************************************************/
+
 package systemC;
 import InstrumentationPackage.*;
 import MessagePackage.*;
